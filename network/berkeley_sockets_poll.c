@@ -3,14 +3,8 @@
  * @date     24.03.18.
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <errno.h>
+#include "common.h"
 
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <unistd.h>
-#include <fcntl.h>
 #include <poll.h>
 
 #define POLL_SIZE 2048

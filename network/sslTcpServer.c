@@ -4,7 +4,6 @@
  */
 
 #include <unistd.h>
-#include <malloc.h>
 #include <string.h>
 #include <arpa/inet.h>
 #include "openssl/ssl.h"
@@ -47,7 +46,7 @@ SSL_CTX* InitServerCTX()
 	OpenSSL_add_all_algorithms();
 	SSL_load_error_strings();
 
-	const SSL_METHOD* method = TLSv1_2_server_method();
+	const SSL_METHOD* method = DTLS_server_method();
 	SSL_CTX* ctx = SSL_CTX_new(method);
 
 	if(ctx == NULL)

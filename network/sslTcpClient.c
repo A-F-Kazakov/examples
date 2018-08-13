@@ -3,12 +3,9 @@
  * @date     01.02.18.
  */
 
-#include <stdio.h>
 #include <unistd.h>
-#include <malloc.h>
 #include <string.h>
 #include <sys/socket.h>
-#include <resolv.h>
 #include <netdb.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
@@ -50,7 +47,7 @@ SSL_CTX* InitCTX()
 
 	OpenSSL_add_all_algorithms();
 	SSL_load_error_strings();
-	method = TLS_client_method();
+	method = DTLS_client_method();
 	ctx = SSL_CTX_new(method);
 
 	if(ctx == NULL)

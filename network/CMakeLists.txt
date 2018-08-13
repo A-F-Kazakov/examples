@@ -9,7 +9,7 @@ add_executable(${HEAD_NAME}_kqueue	berkeley_sockets_kqueue.c)
 endif()
 
 add_executable(sslEchoServer sslTcpServer.c)
-target_link_libraries(sslEchoServer PUBLIC openssl)
+target_link_libraries(sslEchoServer PUBLIC ssl crypto)
 
 add_executable(sslEchoClient sslTcpClient.c)
-target_link_libraries(sslEchoClient PUBLIC openssl)
+target_link_libraries(sslEchoClient PUBLIC ssl crypto)

@@ -3,16 +3,7 @@
  * @date     24.03.18.
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <errno.h>
-
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <unistd.h>
-#include <fcntl.h>
-
-#define HANDLE_ERROR(X) if(X == -1){ printf("%s(%d)", strerror(errno), errno); return -1; }
+#include "common.h"
 
 int main(int argc, char** argv)
 {
@@ -20,14 +11,12 @@ int main(int argc, char** argv)
 
 	HANDLE_ERROR(listener);
 
-//	std::set<int> sockets;
-
 	struct sockaddr_in addr;
 	bzero(&addr, sizeof(addr));
 
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(3000);
-	addr.sin_addr.s_addr = htonl(INADDR_ANY);
+	addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
 
 	int out = bind(listener, (struct sockaddr*)&addr, sizeof(addr));
 
@@ -37,7 +26,7 @@ int main(int argc, char** argv)
 
 	HANDLE_ERROR(out);
 
-	out = fcntl(listener, F_SETFL, res | O_NONBLOCK);
+	out = fcntl(listener, F_SETFL, out | O_NONBLOCK);
 
 	HANDLE_ERROR(out);
 	
@@ -46,18 +35,26 @@ int main(int argc, char** argv)
 	HANDLE_ERROR(out);
 
 	fd_set set;
+	int sockets[128];
+	bzero(sockets, 128 * 4);
+
+	sockets[0] = listener;
 
 	while(1)
 	{
 		FD_ZERO(&set);
 		FD_SET(listener, &set);
 
-//		for(auto&& it : sockets)
-//			FD_SET(it, &set);
+		int max = 0;
+		for(int i = 0; i < 128; ++i)
+		{
+			if(max < sockets[i])
+				max = sockets[i];
+			if(sockets[i])
+				FD_SET(sockets[i], &set);
+		}
 
-//		auto max = std::max(listener, *std::max_element(sockets.begin(), sockets.end()));
-
-//		out = select(max + 1, &set, nullptr, nullptr, nullptr);
+		out = select(max + 1, &set, NULL, NULL, NULL);
 
 		HANDLE_ERROR(out);
 
@@ -65,31 +62,46 @@ int main(int argc, char** argv)
 		{
 			int sock = accept(listener, NULL, NULL);
 
-			int flags = fcntl(sock, F_GETFL, 0);
+			HANDLE_ERROR(sock);
 
-			out = fcntl(sock, F_SETFL, flags | O_NONBLOCK);
+			out = fcntl(sock, F_GETFL, 0);
 
-//			sockets.insert(sock);
+			HANDLE_ERROR(out);
+
+			out = fcntl(sock, F_SETFL, out | O_NONBLOCK);
+
+			HANDLE_ERROR(out);
+
+			for(int i = 0; i < 128; ++i)
+			if(!sockets[i])
+			{
+				sockets[i] = sock;
+				break;
+			}
 		}
-//		else
-//			for(int it = sockets.begin(); it != sockets.end(); ++it)
-//			{
-//				if(FD_ISSET(*it, &set))
-//				{
-//					static char buff[1024];
-//
-//					ssize_t receive = recv(*it, buff, 1024, MSG_NOSIGNAL);
-//
-//					if(receive == 0 && errno != EAGAIN)
-//					{
-//						shutdown(*it, SHUT_RDWR);
-//						close(*it);
-//						sockets.erase(it);
-//					}
-//					else
-//						if(receive != 0)
-//							ssize_t sended = send(*it, buff, 1024, MSG_NOSIGNAL);
-//				}
-//			}
+		else
+			for(int i = 0; i < 128; ++i)
+			{
+				if(FD_ISSET(sockets[i], &set))
+				{
+					static char buff[1024];
+
+					ssize_t received = recv(sockets[i], buff, 1024, MSG_NOSIGNAL);
+
+					HANDLE_ERROR(received);
+
+					if(received == 0 && errno != EAGAIN)
+					{
+						shutdown(sockets[i], SHUT_RDWR);
+						close(sockets[i]);
+						sockets[i] = 0;
+					}
+					else
+					{
+						ssize_t sended = send(sockets[i], buff, (size_t)received, MSG_NOSIGNAL);
+						HANDLE_ERROR(sended);
+					}
+				}
+			}
 	}
 }
