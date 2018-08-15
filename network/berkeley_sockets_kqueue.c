@@ -7,8 +7,6 @@
 
 #include <sys/event.h>
 
-#define HANDLE_ERROR(X) if(X == -1){ printf("%s(%d)", strerror(errno), errno); return -1; }
-
 int main(int argc, char** argv)
 {
 	int listener = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
