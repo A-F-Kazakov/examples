@@ -3,60 +3,9 @@
  * @date     03.02.18.
  */
 
-#include <unistd.h>
-#include <string.h>
-#include <arpa/inet.h>
-#include "openssl/ssl.h"
-#include "openssl/err.h"
+#include <signal.h>
 
-int OpenListener(uint16_t port)
-{
-	int sd = socket(PF_INET, SOCK_STREAM, 0);
-
-	struct sockaddr_in addr;
-	bzero(&addr, sizeof(addr));
-	addr.sin_family = AF_INET;
-	addr.sin_port = htons(port);
-	addr.sin_addr.s_addr = INADDR_ANY;
-
-	if(bind(sd, (struct sockaddr*)&addr, sizeof(addr)) != 0)
-	{
-		perror("can't bind port");
-		abort();
-	}
-
-	if(listen(sd, 10) != 0)
-	{
-		perror("Can't configure listening port");
-		abort();
-	}
-
-	return sd;
-}
-
-int isRoot()
-{
-	if(getuid() != 0)
-		return 0;
-	return 1;
-}
-
-SSL_CTX* InitServerCTX()
-{
-	OpenSSL_add_all_algorithms();
-	SSL_load_error_strings();
-
-	const SSL_METHOD* method = DTLS_server_method();
-	SSL_CTX* ctx = SSL_CTX_new(method);
-
-	if(ctx == NULL)
-	{
-		ERR_print_errors_fp(stderr);
-		abort();
-	}
-
-	return ctx;
-}
+#include "sslCommon.h"
 
 void LoadCertificates(SSL_CTX* ctx, char* CertFile, char* KeyFile)
 {
@@ -79,41 +28,41 @@ void LoadCertificates(SSL_CTX* ctx, char* CertFile, char* KeyFile)
 	}
 }
 
-void ShowCerts(SSL* ssl)
+int OpenListener(uint16_t port)
 {
+	int sd = socket(PF_INET, SOCK_STREAM, 0);
 
-	char* line;
+	struct sockaddr_in addr;
+	bzero(&addr, sizeof(addr));
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons(port);
+	addr.sin_addr.s_addr = INADDR_ANY;
 
-	X509* cert = SSL_get_peer_certificate(ssl);
-
-	if(cert != NULL)
+	if(bind(sd, (struct sockaddr*)&addr, sizeof(addr)) != 0)
 	{
-		printf("Server certificates:\n");
-
-		line = X509_NAME_oneline(X509_get_subject_name(cert), NULL, 0);
-		printf("Subject: %s\n", line);
-		free(line);
-
-		line = X509_NAME_oneline(X509_get_issuer_name(cert), NULL, 0);
-		printf("Issuer: %s\n", line);
-		free(line);
-
-		X509_free(cert);
+		perror("Can't bind port");
+		abort();
 	}
-	else
-		printf("No certificates.\n");
+
+	if(listen(sd, 10) != 0)
+	{
+		perror("Can't configure listening port");
+		abort();
+	}
+
+	return sd;
 }
 
 void Servlet(SSL* ssl)
 {
-	const char* ServerResponse = "<Body><Name>Hello!</Name><year>2018</year><Author>Kazakov Andrei</Author></Body>";
+	const char* ServerResponse = "<Body><Name>Hello!</Name><year>2018</year><Author>@username</Author></Body>";
 	const char* cpValidMessage = "<Body><UserName>usr</UserName><Password>pwd</Password></Body>";
 
 	if(SSL_accept(ssl) == -1)
 		ERR_print_errors_fp(stderr);
 	else
 	{
-		ShowCerts(ssl);
+		ShowCertificates(ssl);
 
 		char buf[1024] = {0};
 		int bytes = SSL_read(ssl, buf, sizeof(buf) - 1);
@@ -137,29 +86,41 @@ void Servlet(SSL* ssl)
 	close(sd);
 }
 
+int* sockPtr = NULL;
+
+void signalHandler(int sig)
+{
+	close(*sockPtr);
+}
+
 int main(int argc, char** argv)
 {
 	if(!isRoot())
 	{
-		printf("This program must be run as root/sudo user!!");
+		printf("This program must be run as root/sudo user!!\n");
+		return 0;
+	}
+
+	if(argc != 4)
+	{
+		printf("Usage: %s <port> <cert> <key>\n", argv[0]);
 		exit(0);
 	}
 
-	if(argc != 2)
-	{
-		printf("Usage: %s <portnum>\n", argv[0]);
-		exit(0);
-	}
+	printf("Starting server on port %s\n", argv[1]);
+	fflush(stdout);
+
+	signal(SIGINT, signalHandler);
 
 	SSL_library_init();
 
-	char* portnum = argv[1];
+	SSL_CTX* ctx = InitiateCtx(DTLS_server_method());
 
-	SSL_CTX* ctx = InitServerCTX();
+	LoadCertificates(ctx, (argv[2]), (argv[3]));
 
-	LoadCertificates(ctx, ("mycert.pem"), ("mycert.pem"));
+	int server = OpenListener((uint16_t)atoi(argv[1]));
 
-	int server = OpenListener((uint16_t)atoi(portnum));
+	sockPtr = &server;
 
 	while(1)
 	{
@@ -167,12 +128,19 @@ int main(int argc, char** argv)
 		socklen_t len = sizeof(addr);
 
 		int client = accept(server, (struct sockaddr*)&addr, &len);
+
+		if(client == -1 && errno == 9)
+			break;
+
 		printf("Connection: %s:%d\n", inet_ntoa(addr.sin_addr), ntohs(addr.sin_port));
 
 		SSL* ssl = SSL_new(ctx);
 		SSL_set_fd(ssl, client);
 		Servlet(ssl);
 	}
+
+	printf("\b\bStopping server\n");
+
 	close(server);
 	SSL_CTX_free(ctx);
 }

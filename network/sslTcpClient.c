@@ -3,12 +3,7 @@
  * @date     01.02.18.
  */
 
-#include <unistd.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <openssl/ssl.h>
-#include <openssl/err.h>
+#include "sslCommon.h"
 
 int OpenConnection(const char* hostname, uint16_t port)
 {
@@ -40,49 +35,6 @@ int OpenConnection(const char* hostname, uint16_t port)
 	return sd;
 }
 
-SSL_CTX* InitCTX()
-{
-	const SSL_METHOD* method;
-	SSL_CTX* ctx;
-
-	OpenSSL_add_all_algorithms();
-	SSL_load_error_strings();
-	method = DTLS_client_method();
-	ctx = SSL_CTX_new(method);
-
-	if(ctx == NULL)
-	{
-		ERR_print_errors_fp(stderr);
-		abort();
-	}
-	return ctx;
-}
-
-void ShowCerts(SSL* ssl)
-{
-	X509* cert;
-	char* line;
-
-	cert = SSL_get_peer_certificate(ssl);
-
-	if(cert != NULL)
-	{
-		printf("Server certificates:\n");
-
-		line = X509_NAME_oneline(X509_get_subject_name(cert), NULL, 0);
-		printf("Subject: %s\n", line);
-		free(line);
-
-		line = X509_NAME_oneline(X509_get_issuer_name(cert), NULL, 0);
-		printf("Issuer: %s\n", line);
-		free(line);
-
-		X509_free(cert);
-	}
-	else
-		printf("Info: No client certificates configured.\n");
-}
-
 int main(int argc, char** argv, char** env)
 {
 	if(argc != 3)
@@ -91,22 +43,16 @@ int main(int argc, char** argv, char** env)
 		exit(0);
 	}
 
-	char* hostname, * portnum;
-
 	SSL_library_init();
-	hostname = argv[1];
-	portnum = argv[2];
 
-	SSL_CTX* ctx;
-	int server;
-	SSL* ssl;
+	SSL_CTX* ctx = InitiateCtx(TLS_client_method());
 
-	ctx = InitCTX();
-	server = OpenConnection(hostname, (uint16_t)atoi(portnum));
-	ssl = SSL_new(ctx);      /* create new SSL connection state */
-	SSL_set_fd(ssl, server);    /* attach the socket descriptor */
+	int server = OpenConnection(argv[1], (uint16_t)atoi(argv[2]));
+	SSL* ssl = SSL_new(ctx);
+	SSL_set_fd(ssl, server);
 
-	if(SSL_connect(ssl) == -1)   /* perform the connection */
+	auto v = SSL_connect(ssl);
+	if(v == -1)
 		ERR_print_errors_fp(stderr);
 	else
 	{
@@ -126,7 +72,7 @@ int main(int argc, char** argv, char** env)
 
 		printf("\n\nConnected with %s encryption\n", SSL_get_cipher(ssl));
 
-		ShowCerts(ssl);
+		ShowCertificates(ssl);
 		SSL_write(ssl, acClientRequest, (int)strlen(acClientRequest));
 
 		char buf[1024];
