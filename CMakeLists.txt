@@ -6,3 +6,4 @@ set(CMAKE_VERBOSE_MAKEFILE	OFF)
 
 add_subdirectory(network)
 add_subdirectory(queues)
+add_subdirectory(system)
