@@ -1,8 +1,3 @@
-/**
- * @author   Казаков Андрей
- * @date     01.02.18.
- */
-
 #include "sslCommon.h"
 
 int OpenConnection(const char* hostname, uint16_t port)
@@ -16,15 +11,14 @@ int OpenConnection(const char* hostname, uint16_t port)
 		abort();
 	}
 
-	sd       = socket(PF_INET, SOCK_STREAM, 0);
+	sd = socket(PF_INET, SOCK_STREAM, 0);
 
 	struct sockaddr_in addr;
 	bzero(&addr, sizeof(addr));
 
-	addr.sin_family = AF_INET;
-	addr.sin_port = htons(port);
+	addr.sin_family		= AF_INET;
+	addr.sin_port			= htons(port);
 	addr.sin_addr.s_addr = (in_addr_t)(*(long*)(host->h_addr));
-
 
 	if(connect(sd, (struct sockaddr*)&addr, sizeof(addr)) != 0)
 	{
@@ -48,16 +42,16 @@ int main(int argc, char** argv, char** env)
 	SSL_CTX* ctx = InitiateCtx(TLS_client_method());
 
 	int server = OpenConnection(argv[1], (uint16_t)atoi(argv[2]));
-	SSL* ssl = SSL_new(ctx);
+	SSL* ssl	  = SSL_new(ctx);
 	SSL_set_fd(ssl, server);
 
-	auto v = SSL_connect(ssl);
+	int v = SSL_connect(ssl);
 	if(v == -1)
 		ERR_print_errors_fp(stderr);
 	else
 	{
-		char acUsername[16] = {0};
-		char acPassword[16] = {0};
+		char acUsername[16]			  = {0};
+		char acPassword[16]			  = {0};
 		const char* cpRequestMessage = "<Body><UserName>%s</UserName><Password>%s</Password></Body>";
 
 		printf("Enter the User Name : ");
