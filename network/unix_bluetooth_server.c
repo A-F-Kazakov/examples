@@ -4,7 +4,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-int main(int argc, char** argv)
+int main()
 {
 	struct sockaddr_rc loc_addr = {0}, rem_addr = {0};
 	char buf[1024] = {0};
@@ -34,12 +34,9 @@ int main(int argc, char** argv)
 	// read data from the client
 	bytes_read = read(client, buf, sizeof(buf));
 	if(bytes_read > 0)
-	{
 		printf("received [%s]\n", buf);
-	}
 
 	// close connection
 	close(client);
 	close(s);
-	return 0;
 }
