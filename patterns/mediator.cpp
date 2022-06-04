@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string_view>
+#include <memory>
 
 using namespace std;
 
@@ -59,7 +60,7 @@ struct ConcreteMediator : Mediator
 		component2_->setMediator(this);
 	}
 
-	void notify(BaseComponent *sender, string_view event) const override
+	void notify(BaseComponent*, string_view event) const override
 	{
 		if (event == "A")
 		{

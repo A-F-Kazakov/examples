@@ -1,13 +1,8 @@
-/**
- * @author   Казаков Андрей 
- * @date     24.03.18.
- */
-
 #include "common.h"
 
 #include <sys/event.h>
 
-int main(int argc, char** argv)
+int main()
 {
 	int listener = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 

@@ -1,17 +1,21 @@
-set(HEAD_NAME "echo_server")
+set(HEAD_NAME ${PROJECT_NAME}-network)
 
 CHECK_INCLUDE_FILE(sys/socket.h SOCKET)
 
 if(SOCKET)
-	add_executable(${HEAD_NAME}_select	berkeley_sockets_select.c)
-	add_executable(${HEAD_NAME}_poll		berkeley_sockets_poll.c)
-	add_executable(${HEAD_NAME}_epoll	berkeley_sockets_epoll.c)
+	message(STATUS "socket examples available")
+
+	set(TARGET_NAME ${HEAD_NAME}-echo-server)
+
+	add_executable(${TARGET_NAME}-select	berkeley_sockets_select.c)
+	add_executable(${TARGET_NAME}-poll		berkeley_sockets_poll.c)
+	add_executable(${TARGET_NAME}-epoll		berkeley_sockets_epoll.c)
 endif()
 
 CHECK_INCLUDE_FILE(sys/event.h K_QUEUE)
 
 if(K_QUEUE)
-	add_executable(${HEAD_NAME}_kqueue	berkeley_sockets_kqueue.c)
+	add_executable(${TARGET_NAME}-kqueue berkeley_sockets_kqueue.c)
 endif()
 
 #
@@ -19,11 +23,17 @@ endif()
 CHECK_INCLUDE_FILE(openssl/ssl.h SSL)
 
 if(SSL)
-	add_executable(sslEchoServer sslTcpServer.c)
-	target_link_libraries(sslEchoServer PUBLIC ssl crypto)
+	message(STATUS "ssl examples available")
 
-	add_executable(sslEchoClient sslTcpClient.c)
-	target_link_libraries(sslEchoClient PUBLIC ssl crypto)
+	set(TARGET_NAME ${HEAD_NAME}-ssl-server)
+
+	add_executable(${TARGET_NAME} ssl_tcp_server.c)
+	target_link_libraries(${TARGET_NAME} PUBLIC ssl crypto)
+
+	set(TARGET_NAME ${HEAD_NAME}-ssl-client)
+
+	add_executable(${TARGET_NAME} ssl_tcp_client.c)
+	target_link_libraries(${TARGET_NAME} PUBLIC ssl crypto)
 endif()
 
 #
@@ -31,9 +41,15 @@ endif()
 CHECK_INCLUDE_FILE(bluetooth/bluetooth.h BLUETOOTH)
 
 if(BLUETOOTH)
-	add_executable(bluetooth_server unix_bluetooth_server.c)
-	target_link_libraries(bluetooth_server PUBLIC bluetooth)
-	 
-	add_executable(bluetooth_client unix_bluetooth_client.c)
-	target_link_libraries(bluetooth_client PUBLIC bluetooth)
+	message(STATUS "bluetooth examples available")
+
+	set(TARGET_NAME ${HEAD_NAME}-bluetooth-server)
+
+	add_executable(${TARGET_NAME} unix_bluetooth_server.c)
+	target_link_libraries(${TARGET_NAME} PUBLIC bluetooth)
+
+	set(TARGET_NAME ${HEAD_NAME}-bluetooth-client)
+
+	add_executable(${TARGET_NAME} unix_bluetooth_client.c)
+	target_link_libraries(${TARGET_NAME} PUBLIC bluetooth)
 endif()

@@ -2,13 +2,21 @@
 CHECK_INCLUDE_FILE(mqueue.h MQUEUE)
 
 if(MQUEUE)
-	add_executable(posix_queue	posix_queue.c)
-	target_link_libraries(posix_queue rt)
+	message(STATUS "posix queue example available")
+
+	set(TARGET_NAME ${PROJECT_NAME}-queue-posix)
+
+	add_executable(${TARGET_NAME}	posix_queue.c)
+	target_link_libraries(${TARGET_NAME} rt)
 endif()
 
 CHECK_INCLUDE_FILE(sys/msg.h SYSQUEUE)
 
 if(SYSQUEUE)
-	add_executable(systemv_queue	systemv_queue.c)
-	target_link_libraries(systemv_queue rt)
+	message(STATUS "system v queue example available")
+
+	set(TARGET_NAME ${PROJECT_NAME}-queue-sysv)
+
+	add_executable(${TARGET_NAME}	systemv_queue.c)
+	target_link_libraries(${TARGET_NAME} rt)
 endif()

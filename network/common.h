@@ -1,8 +1,3 @@
-/**
- * @author   Казаков Андрей 
- * @date     13.08.18.
- */
-
 #ifndef UNIX_EXAMPLES_COMMON_H
 #define UNIX_EXAMPLES_COMMON_H
 
