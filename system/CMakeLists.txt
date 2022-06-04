@@ -8,10 +8,10 @@ if(UNIX AND NOT APPPLE)
 							 COMMAND ${BUILD_CMD}
 							 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 							 DEPENDS
-							 linux_kernel_module_simple.c
-							 linux_kernel_module_extended.c
-
-							 COMMENT "Building kernel module...")
+								 linux_kernel_module_simple.c
+								 linux_kernel_module_extended.c
+							 COMMENT "Building kernel module..."
+	)
 
 	add_custom_target(simple_driver ALL DEPENDS ${lkm})
 endif()
