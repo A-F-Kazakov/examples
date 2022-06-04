@@ -1,4 +1,11 @@
 
+CHECK_INCLUDE_FILE(X11/Xlib.h X11)
+
+if(X11)
+	add_executable(window window_x11.c)
+	target_link_libraries(window X11)
+endif()
+
 if(UNIX AND NOT APPPLE)
 	set(KERNEL_DIR "/lib/modules/${CMAKE_SYSTEM_VERSION}/build")
 
