@@ -1,8 +1,3 @@
-/**
- * @author   Казаков Андрей 
- * @date     10.08.18.
- */
-
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>

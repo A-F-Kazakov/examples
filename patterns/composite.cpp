@@ -10,8 +10,8 @@ struct Component : enable_shared_from_this<Component>
 	void setParent(shared_ptr<Component> parent) { parent_ = parent; }
 	shared_ptr<Component> getParent() const { return parent_; }
 
-	virtual void add(shared_ptr<Component> component) {}
-	virtual void remove(shared_ptr<Component> component) {}
+	virtual void add(shared_ptr<Component>) {}
+	virtual void remove(shared_ptr<Component>) {}
 	virtual bool isComposite() const { return false; }
 	virtual string operation() const = 0;
 

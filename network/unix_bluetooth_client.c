@@ -4,7 +4,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-int main(int argc, char** argv)
+int main()
 {
 	struct sockaddr_rc addr = {0};
 	int s, status;

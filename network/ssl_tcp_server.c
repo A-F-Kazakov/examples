@@ -1,11 +1,6 @@
-/**
- * @author   Казаков Андрей
- * @date     03.02.18.
- */
+#include "ssl_common.h"
 
 #include <signal.h>
-
-#include "sslCommon.h"
 
 void LoadCertificates(SSL_CTX* ctx, char* CertFile, char* KeyFile)
 {

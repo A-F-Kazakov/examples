@@ -1,4 +1,4 @@
-#include "sslCommon.h"
+#include "ssl_common.h"
 
 int OpenConnection(const char* hostname, uint16_t port)
 {
