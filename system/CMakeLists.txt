@@ -1,7 +1,8 @@
 set(HEAD_NAME ${PROJECT_NAME}-system)
 
-if(WIN)
-
+if(WIN32)
+	add_executable(${HEAD_NAME}-window WIN32 window_winapi.c)
+	target_compile_definitions(${HEAD_NAME}-window PUBLIC UNICODE)
 else()
 	CHECK_INCLUDE_FILE(X11/Xlib.h X11)
 
