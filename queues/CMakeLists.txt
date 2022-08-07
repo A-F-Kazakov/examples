@@ -6,7 +6,7 @@ if(MQUEUE)
 
 	set(TARGET_NAME ${PROJECT_NAME}-queue-posix)
 
-	add_executable(${TARGET_NAME}	posix_queue.c)
+	add_executable(${TARGET_NAME} posix_queue.c)
 	target_link_libraries(${TARGET_NAME} rt)
 endif()
 
@@ -17,6 +17,14 @@ if(SYSQUEUE)
 
 	set(TARGET_NAME ${PROJECT_NAME}-queue-sysv)
 
-	add_executable(${TARGET_NAME}	systemv_queue.c)
+	add_executable(${TARGET_NAME} systemv_queue.c)
 	target_link_libraries(${TARGET_NAME} rt)
+endif()
+
+if(WIN32)
+	message(STATUS "ms message queue available")
+
+	set(TARGET_NAME ${PROJECT_NAME}-msmq)
+
+	add_executable(${TARGET_NAME} msmq.c)
 endif()
