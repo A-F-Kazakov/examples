@@ -4,7 +4,7 @@ if(WIN32)
 	add_executable(${HEAD_NAME}-window WIN32 window_winapi.c)
 	target_compile_definitions(${HEAD_NAME}-window PUBLIC UNICODE)
 
-	add_executable(${HEAD_NAME}-service WIN32 service.c)
+	add_executable(${HEAD_NAME}-service service.c)
 else()
 	CHECK_INCLUDE_FILE(X11/Xlib.h X11)
 

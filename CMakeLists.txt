@@ -7,13 +7,14 @@ set(CMAKE_CXX_STANDARD		17)
 set(CMAKE_VERBOSE_MAKEFILE	OFF)
 
 if(MSVC)
-	add_compile_options(/W4 /WX)
+	add_compile_options(/W4)
 else()
-	add_compile_options(-Wall -Wextra -pedantic -Werror)
+	add_compile_options(-Wall -Wextra -pedantic)
 endif()
 
 include(CheckIncludeFile)
 
+add_subdirectory(audio)
 add_subdirectory(network)
 add_subdirectory(queues)
 add_subdirectory(system)
