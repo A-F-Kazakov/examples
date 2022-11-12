@@ -1,3 +1,5 @@
+#define _UNICODE
+
 #include <windows.h>
 #include <tchar.h>
 
@@ -40,7 +42,9 @@ void controlHandler(DWORD request)
 
 void serviceMain(int argc, char** argv)
 {
-	int error;
+	(void)argc;
+	(void*)argv;
+
 	int i = 0;
 
 	serviceStatus.dwServiceType				= SERVICE_WIN32_OWN_PROCESS;
@@ -61,7 +65,7 @@ void serviceMain(int argc, char** argv)
 	while(serviceStatus.dwCurrentState == SERVICE_RUNNING)
 	{
 		char buffer[255];
-		sprintf_s(buffer, "%u", i);
+		sprintf_s(buffer, sizeof buffer - 1, "%u", i);
 		log(buffer);
 		i++;
 	}
@@ -176,9 +180,9 @@ int startService()
 	return 0;
 }
 
-int WinMain(int argc, _TCHAR** argv)
+int main(int argc, _TCHAR** argv)
 {
-	servicePath = argv[0];
+	servicePath = (LPTSTR)argv[0];
 
 	if(argc - 1 == 0)
 	{
