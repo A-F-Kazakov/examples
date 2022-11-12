@@ -5,6 +5,8 @@ if(WIN32)
 	target_compile_definitions(${HEAD_NAME}-window PUBLIC UNICODE)
 
 	add_executable(${HEAD_NAME}-service service.c)
+
+	add_executable(${HEAD_NAME}-gamepad gamepad.c)
 else()
 	CHECK_INCLUDE_FILE(X11/Xlib.h X11)
 
