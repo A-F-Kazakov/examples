@@ -85,6 +85,7 @@ int* sockPtr = NULL;
 
 void signalHandler(int sig)
 {
+	(void)(sig);
 	close(*sockPtr);
 }
 

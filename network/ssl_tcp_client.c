@@ -29,7 +29,7 @@ int OpenConnection(const char* hostname, uint16_t port)
 	return sd;
 }
 
-int main(int argc, char** argv, char** env)
+int main(int argc, char** argv)
 {
 	if(argc != 3)
 	{
