@@ -11,14 +11,14 @@ SERVICE_STATUS_HANDLE serviceStatusHandle;
 LPTSTR servicePath;
 LPTSTR serviceName = "TestService";
 
-void log(const char* str) { fprintf(stderr, str); }
+static void log_(const char* str) { fprintf(stderr, str); }
 
 void controlHandler(DWORD request)
 {
 	switch(request)
 	{
 		case SERVICE_CONTROL_STOP:
-			log("Stopped.");
+			log_("Stopped.");
 
 			serviceStatus.dwWin32ExitCode = 0;
 			serviceStatus.dwCurrentState = SERVICE_STOPPED;
@@ -26,7 +26,7 @@ void controlHandler(DWORD request)
 			return;
 
 		case SERVICE_CONTROL_SHUTDOWN:
-			log("Shutdown.");
+			log_("Shutdown.");
 
 			serviceStatus.dwWin32ExitCode = 0;
 			serviceStatus.dwCurrentState	= SERVICE_STOPPED;
@@ -66,7 +66,7 @@ void serviceMain(int argc, char** argv)
 	{
 		char buffer[255];
 		sprintf_s(buffer, sizeof buffer - 1, "%u", i);
-		log(buffer);
+		log_(buffer);
 		i++;
 	}
 }
@@ -76,7 +76,7 @@ int installService()
 	SC_HANDLE hSCManager = OpenSCManager(NULL, NULL, SC_MANAGER_CREATE_SERVICE);
 	if(!hSCManager)
 	{
-		log("Error: Can't open Service Control Manager");
+		log_("Error: Can't open Service Control Manager");
 		return -1;
 	}
 
@@ -100,31 +100,31 @@ int installService()
 		switch(err)
 		{
 			case ERROR_ACCESS_DENIED:
-				log("Error: ERROR_ACCESS_DENIED");
+				log_("Error: ERROR_ACCESS_DENIED");
 				break;
 			case ERROR_CIRCULAR_DEPENDENCY:
-				log("Error: ERROR_CIRCULAR_DEPENDENCY");
+				log_("Error: ERROR_CIRCULAR_DEPENDENCY");
 				break;
 			case ERROR_DUPLICATE_SERVICE_NAME:
-				log("Error: ERROR_DUPLICATE_SERVICE_NAME");
+				log_("Error: ERROR_DUPLICATE_SERVICE_NAME");
 				break;
 			case ERROR_INVALID_HANDLE:
-				log("Error: ERROR_INVALID_HANDLE");
+				log_("Error: ERROR_INVALID_HANDLE");
 				break;
 			case ERROR_INVALID_NAME:
-				log("Error: ERROR_INVALID_NAME");
+				log_("Error: ERROR_INVALID_NAME");
 				break;
 			case ERROR_INVALID_PARAMETER:
-				log("Error: ERROR_INVALID_PARAMETER");
+				log_("Error: ERROR_INVALID_PARAMETER");
 				break;
 			case ERROR_INVALID_SERVICE_ACCOUNT:
-				log("Error: ERROR_INVALID_SERVICE_ACCOUNT");
+				log_("Error: ERROR_INVALID_SERVICE_ACCOUNT");
 				break;
 			case ERROR_SERVICE_EXISTS:
-				log("Error: ERROR_SERVICE_EXISTS");
+				log_("Error: ERROR_SERVICE_EXISTS");
 				break;
 			default:
-				log("Error: Undefined");
+				log_("Error: Undefined");
 		}
 		CloseServiceHandle(hSCManager);
 		return -1;
@@ -132,7 +132,7 @@ int installService()
 
 	CloseServiceHandle(hService);
 	CloseServiceHandle(hSCManager);
-	log("Success install service!");
+	log_("Success install service!");
 
 	return 0;
 }
@@ -142,14 +142,14 @@ int removeService()
 	SC_HANDLE hSCManager = OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);
 	if(!hSCManager)
 	{
-		log("Error: Can't open Service Control Manager");
+		log_("Error: Can't open Service Control Manager");
 		return -1;
 	}
 
 	SC_HANDLE hService = OpenService(hSCManager, serviceName, SERVICE_STOP | DELETE);
 	if(!hService)
 	{
-		log("Error: Can't remove service");
+		log_("Error: Can't remove service");
 		CloseServiceHandle(hSCManager);
 		return -1;
 	}
@@ -157,7 +157,7 @@ int removeService()
 	DeleteService(hService);
 	CloseServiceHandle(hService);
 	CloseServiceHandle(hSCManager);
-	log("Success remove service!");
+	log_("Success remove service!");
 
 	return 0;
 }
@@ -170,7 +170,7 @@ int startService()
 	if(!StartService(hService, 0, NULL))
 	{
 		CloseServiceHandle(hSCManager);
-		log("Error: Can't start service");
+		log_("Error: Can't start service");
 		return -1;
 	}
 

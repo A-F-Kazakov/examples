@@ -43,7 +43,7 @@ struct Composite : Component
 	string operation() const override
 	{
 		string result;
-		for(const auto c : children_)
+		for(const auto &c : children_)
 			if(c == children_.back())
 				result += c->operation();
 			else

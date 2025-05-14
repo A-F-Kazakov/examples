@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static const int samplerate = 44'100;
+static const int samplerate = 44100;
 
 int16_t sine_wave(double time, double freq, double amp)
 {
