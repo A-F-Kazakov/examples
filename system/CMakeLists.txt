@@ -36,3 +36,5 @@ if(UNIX AND NOT APPPLE)
 
 	add_custom_target(${HEAD_NAME}-simple-driver ALL DEPENDS ${lkm})
 endif()
+
+add_executable(${HEAD_NAME}-vtable vtable.c)
