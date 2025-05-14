@@ -53,3 +53,18 @@ if(BLUETOOTH)
 	add_executable(${TARGET_NAME} unix_bluetooth_client.c)
 	target_link_libraries(${TARGET_NAME} PUBLIC bluetooth)
 endif()
+
+find_package(PkgConfig)
+
+if(PKG_CONFIG_FOUND)
+	pkg_check_modules(ssh REQUIRED IMPORTED_TARGET libssh)
+
+	if(ssh_FOUND)
+		message(STATUS "ssh examples available")
+
+		set(TARGET_NAME ${HEAD_NAME}-ssh-client)
+
+		add_executable(${TARGET_NAME} ssh.c)
+		target_link_libraries(${TARGET_NAME} PUBLIC PkgConfig::ssh)
+	endif()
+endif()

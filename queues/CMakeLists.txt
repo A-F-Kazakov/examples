@@ -21,10 +21,6 @@ if(SYSQUEUE)
 	target_link_libraries(${TARGET_NAME} rt)
 endif()
 
-find_library(result NAMES msmq)
-
-message(STATUS ${result})
-
 if(WIN32)
 	message(STATUS "ms message queue available")
 
