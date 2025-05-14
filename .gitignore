@@ -35,3 +35,4 @@ out
 *.exe
 *.out
 *.app
+CMakeUserPresets.json
