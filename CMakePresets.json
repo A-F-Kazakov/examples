@@ -2,29 +2,29 @@
 	"version": 6,
 	"configurePresets": [
 		{
-			"name": "release",
+			"name": "default",
 			"binaryDir": "${sourceDir}/_build/${hostSystemName}_${presetName}",
 			"cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
 		}
 	],
 	"buildPresets": [
 		{
-			"name": "release",
-			"configurePreset": "release",
+			"name": "default",
+			"configurePreset": "default",
 			"configuration": "Release"
 		}
 	],
 	"workflowPresets": [
 		{
-			"name": "release",
+			"name": "default",
 			"steps": [
 				{
 					"type": "configure",
-					"name": "release"
+					"name": "default"
 				},
 				{
 					"type": "build",
-					"name": "release"
+					"name": "default"
 				}
 			]
 		}

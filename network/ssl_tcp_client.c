@@ -55,10 +55,21 @@ int main(int argc, char** argv)
 		const char* cpRequestMessage = "<Body><UserName>%s</UserName><Password>%s</Password></Body>";
 
 		printf("Enter the User Name : ");
-		scanf("%s", acUsername);
+		int result = scanf("%s", acUsername);
+
+		if(result <= 0)
+		{
+			printf("error while scanning username");
+			return -1;
+		}
 
 		printf("\n\nEnter the Password : ");
-		scanf("%s", acPassword);
+		result = scanf("%s", acPassword);
+		if(result <= 0)
+		{
+			printf("error while scanning username");
+			return -1;
+		}
 
 		char acClientRequest[1024] = {0};
 

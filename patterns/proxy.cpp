@@ -46,8 +46,7 @@ int main()
 	auto subj = make_unique<ConcreteSubject>();
 	subj->request();
 
-	cout << "\n";
-	cout << "Client: Executing the same client code with a proxy:\n";
+	cout << "\n Client: Executing the same client code with a proxy:\n";
 	Proxy proxy{move(subj)};
 	proxy.request();
 }

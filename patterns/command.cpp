@@ -47,8 +47,8 @@ struct ComplexCommand : Command
 
 struct Invoker
 {
-	void setOnStart(unique_ptr<Command>&& command) { swap(on_start_, command); }
-	void setOnFinish(unique_ptr<Command>&& command) { swap(on_finish_, command); }
+	void setOnStart(unique_ptr<Command> command) { swap(on_start_, command); }
+	void setOnFinish(unique_ptr<Command> command) { swap(on_finish_, command); }
 
 	void doSomethingImportant()
 	{

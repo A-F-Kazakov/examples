@@ -57,7 +57,7 @@ endif()
 find_package(PkgConfig)
 
 if(PKG_CONFIG_FOUND)
-	pkg_check_modules(ssh REQUIRED IMPORTED_TARGET libssh)
+	pkg_check_modules(ssh IMPORTED_TARGET libssh)
 
 	if(ssh_FOUND)
 		message(STATUS "ssh examples available")
