@@ -7,6 +7,8 @@ if(WIN32)
 	add_executable(${HEAD_NAME}-service service.c)
 
 	add_executable(${HEAD_NAME}-gamepad gamepad.c)
+
+	add_executable(${HEAD_NAME}-ioring ioring.c)
 else()
 	CHECK_INCLUDE_FILE(X11/Xlib.h X11)
 
