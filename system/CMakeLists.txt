@@ -9,6 +9,8 @@ if(WIN32)
 	add_executable(${HEAD_NAME}-gamepad gamepad.c)
 
 	add_executable(${HEAD_NAME}-ioring ioring.c)
+
+	add_executable(${HEAD_NAME}-console console.c)
 else()
 	CHECK_INCLUDE_FILE(X11/Xlib.h X11)
 
